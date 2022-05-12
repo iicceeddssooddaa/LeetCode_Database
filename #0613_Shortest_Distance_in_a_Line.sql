@@ -14,3 +14,12 @@ diff AS (
 SELECT MIN(diff) AS shortest
 FROM diff
 WHERE diff != 0
+------
+WITH t1 AS (
+    SELECT 
+        x - LAG(x) OVER (ORDER BY x) AS diff
+    FROM
+        Point
+)
+SELECT MIN(diff) AS shortest
+FROM t1
