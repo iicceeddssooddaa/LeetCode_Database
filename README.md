@@ -1,4 +1,7 @@
 # LeetCode_Database practice
-MySQL
+This is my code repository of LeetCode Database practices, using MySQL language.
+
 Advices welcome.
+
+-----------------
 ## I just realized it is a *markdown*.
