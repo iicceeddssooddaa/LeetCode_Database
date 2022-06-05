@@ -1,13 +1,7 @@
-WITH temp AS (
-    SELECT
-        name, bonus
-    FROM
-        Employee
-    LEFT OUTER JOIN Bonus ON Employee.empID = Bonus.empID
+WITH t AS (
+    SELECT name, bonus
+    FROM Employee
+    LEFT OUTER JOIN Bonus ON Employee.empId = Bonus.empId
 )
-SELECT
-    name, bonus
-FROM 
-    temp
-WHERE
-    (bonus IS NULL) OR (bonus < 1000)
+SELECT * FROM t
+WHERE bonus IS NULL OR bonus < 1000; 
