@@ -1,6 +1,2 @@
-SELECT 
-    product_id, 
-    SUM(quantity) AS total_quantity
-FROM
-    Sales
-GROUP BY product_id;
+SELECT DISTINCT product_id, SUM(quantity) OVER (PARTITION BY product_id) AS total_quantity
+FROM Sales;
