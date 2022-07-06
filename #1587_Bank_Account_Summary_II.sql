@@ -1,15 +1,5 @@
-WITH Balance AS
-    (SELECT 
-        account,
-        SUM(amount) as balance
-     FROM
-        Transactions
-     GROUP BY
-        account)
-SELECT 
-    name, 
-    balance
-FROM
-    Users
-LEFT OUTER JOIN Balance ON Users.account = Balance.account
-WHERE balance > 10000;
+SELECT name, SUM(amount) AS balance
+FROM Transactions
+LEFT OUTER JOIN Users ON Transactions.account = Users.account
+GROUP BY Transactions.account
+HAVING SUM(amount) > 10000;
