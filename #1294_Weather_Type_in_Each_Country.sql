@@ -1,13 +1,13 @@
-WITH t1 AS (
-    SELECT country_id, weather_state
+WITH t AS (
+    SELECT country_id, AVG(weather_state) AS average_weather
     FROM Weather
-    WHERE day BETWEEN "2019-11-01" AND "2019-11-30"
+    WHERE day BETWEEN '2019-11-01' AND '2019-11-30'
+    GROUP BY country_id
 )
-SELECT country_name, (CASE 
-                        WHEN SUM(weather_state)/ COUNT(weather_state) <= 15 THEN "Cold"
-                        WHEN SUM(weather_state)/ COUNT(weather_state) >= 25 THEN "Hot"
-                        ELSE "Warm" END
-) AS weather_type
-FROM t1
-LEFT OUTER JOIN Countries ON t1.country_id = Countries.country_id
-GROUP BY t1.country_id
+SELECT country_name, CASE
+    WHEN average_weather <=15 THEN 'Cold'
+    WHEN average_weather >=25 THEN 'Hot'
+    ELSE 'Warm'
+    END AS weather_type
+FROM t
+LEFT OUTER JOIN Countries ON t.country_id = Countries.country_id;
