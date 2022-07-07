@@ -1,26 +1,5 @@
-WITH ny AS(
-    SELECT
-        COUNT(score) AS ny_count
-    FROM
-        NeWYork
-    WHERE
-        score >= 90
-),
-ca AS(
-    SELECT
-        COUNT(score) AS ca_count
-    FROM
-        California
-    WHERE
-        score >= 90
-),
-compare AS(
-    SELECT * FROM ny NATURAL LEFT OUTER JOIN ca
-)
-
-SELECT (CASE
-       WHEN ny_count > ca_count THEN "New York University"
-       WHEN ca_count > ny_count THEN "California University"
-       ELSE "No Winner"
-       END) AS winner
-FROM compare
+SELECT CASE
+    WHEN (SELECT COUNT(1) FROM NewYork WHERE score >= 90) > (SELECT COUNT(1) FROM California WHERE score >= 90) THEN 'New York University'
+    WHEN (SELECT COUNT(1) FROM NewYork WHERE score >= 90) < (SELECT COUNT(1) FROM California WHERE score >= 90) THEN 'California University'
+    ELSE 'No Winner'
+    END AS winner
