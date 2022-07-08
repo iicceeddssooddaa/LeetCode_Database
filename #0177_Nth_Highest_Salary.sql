@@ -12,3 +12,15 @@ FROM
     temp
   );
 END
+------------
+CREATE FUNCTION getNthHighestSalary(N INT) RETURNS INT
+BEGIN
+  RETURN (
+      # Write your MySQL query statement below.
+      WITH t AS (
+        SELECT DISTINCT salary, DENSE_RANK() OVER (ORDER BY salary DESC) AS sal_rnk
+        FROM Employee
+      )
+      SELECT IFNULL( (SELECT salary FROM t WHERE sal_rnk = N) ,NULL) AS result
+  );
+END
