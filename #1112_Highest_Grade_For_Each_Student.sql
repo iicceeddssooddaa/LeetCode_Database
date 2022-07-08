@@ -1,13 +1,8 @@
-WITH t1 AS (
-    SELECT student_id, course_id, grade, MAX(grade) OVER (PARTITION BY student_id) AS max_grade
-    FROM Enrollments
-),
-t2 AS (
-    SELECT student_id, course_id, grade
-    FROM t1
-    WHERE grade = max_grade
-    ORDER BY student_id, course_id
-)
-SELECT DISTINCT student_id, MIN(course_id) OVER (PARTITION BY student_id) AS course_id, grade 
-FROM t2
-ORDER BY student_id
+WITH t AS (
+    SELECT student_id, course_id, grade, ROW_NUMBER() OVER (PARTITION BY student_id ORDER BY grade DESC, course_id ASC) AS rnk
+    FROM Enrollments 
+) 
+SELECT student_id, course_id, grade
+FROM t
+WHERE rnk = 1
+ORDER BY student_id;
