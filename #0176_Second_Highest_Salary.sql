@@ -6,3 +6,17 @@ SELECT
      END) AS SecondHighestSalary
 FROM
     temp
+-------------
+WITH t AS (
+    SELECT id, salary, DENSE_RANK() OVER (ORDER BY salary DESC) AS sal_rnk
+    FROM Employee
+)
+SELECT IFNULL((SELECT DISTINCT salary AS SecondHighestSalary
+FROM t
+WHERE sal_rnk = 2), NULL) AS SecondHighestSalary;
+-------------
+WITH t AS (
+    SELECT DISTINCT salary, DENSE_RANK() OVER (ORDER BY salary DESC) AS sal_rank
+    FROM Employee
+)
+SELECT IFNULL( (SELECT salary FROM t WHERE sal_rank = 2),NULL) AS SecondHighestSalary
