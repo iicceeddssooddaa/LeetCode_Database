@@ -17,3 +17,14 @@ r AS (
 SELECT question_id AS survey_log
 FROM r
 LIMIT 1;
+--------
+WITH t AS (
+    SELECT DISTINCT question_id, 
+        SUM(IF(action='answer', 1, 0)) OVER (PARTITION BY question_id) / 
+        SUM(IF(action='show', 1, 0)) OVER (PARTITION BY question_id) AS ans_rate
+    FROM SurveyLog
+)
+SELECT question_id AS survey_log
+FROM t
+ORDER BY ans_rate DESC, question_id
+LIMIT 1;
