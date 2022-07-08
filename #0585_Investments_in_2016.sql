@@ -1,20 +1,7 @@
-WITH t1 AS (
-    SELECT DISTINCT tiv_2015, COUNT(*) OVER (PARTITION BY tiv_2015) AS prev_inv
+WITH t AS (
+    SELECT pid, tiv_2016, COUNT(1) OVER (PARTITION BY tiv_2015) >1 AS tiv_2015_flag, COUNT(1) OVER (PARTITION BY lat, lon) = 1 AS loc_flag
     FROM Insurance
-),
-t2 AS (
-    SELECT DISTINCT lat, lon, COUNT(*) OVER (PARTITION BY lat, lon) AS loc_cnt
-    FROM Insurance
-),
-t3 AS (
-    SELECT pid
-    FROM Insurance
-    INNER JOIN t2
-    ON Insurance.lat = t2.lat AND Insurance.lon = t2.lon
-    WHERE loc_cnt = 1
 )
 SELECT ROUND(SUM(tiv_2016),2) AS tiv_2016
-FROM Insurance
-INNER JOIN t1 ON Insurance.tiv_2015 = t1.tiv_2015
-INNER JOIN t3 ON Insurance.pid = t3.pid
-WHERE prev_inv >=2;
+FROM t
+WHERE tiv_2015_flag AND loc_flag;
