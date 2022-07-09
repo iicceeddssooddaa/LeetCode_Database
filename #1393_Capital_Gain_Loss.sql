@@ -26,3 +26,6 @@ FROM
     name_tab
 LEFT OUTER JOIN buyin ON name_tab.stock_name = buyin.stock_name
 LEFT OUTER JOIN sellout ON name_tab.stock_name = sellout.stock_name
+-----------
+SELECT DISTINCT stock_name, SUM(IF(operation = 'Sell', price, -price)) OVER (PARTITION BY stock_name) AS capital_gain_loss
+FROM Stocks;
