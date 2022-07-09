@@ -31,3 +31,10 @@ SELECT DISTINCT month, country,
     SUM(amount) OVER (PARTITION BY month, country) AS trans_total_amount, 
     SUM(IF(state = 'approved', amount,0)) OVER (PARTITION BY month, country) AS approved_total_amount
 FROM t;
+-------
+SELECT DISTINCT DATE_FORMAT(trans_date, '%Y-%m') AS month, country, 
+    COUNT(1) OVER w AS trans_count, SUM(IF(state = 'approved', 1,0)) OVER w AS approved_count,
+    SUM(amount) OVER w AS trans_total_amount, 
+    SUM(IF(state = 'approved', amount,0)) OVER w AS approved_total_amount
+FROM Transactions
+WINDOW w AS (PARTITION BY DATE_FORMAT(trans_date, '%Y-%m'), country);
