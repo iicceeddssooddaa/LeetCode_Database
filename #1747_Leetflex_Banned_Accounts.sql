@@ -1,16 +1,11 @@
-WITH LogInfo_new AS (
-    SELECT DISTINCT * FROM LogInfo
-    ORDER BY account_id, login
+WITH t1 AS (
+    SELECT DISTINCT * FROM LogInfo ORDER BY account_id, login
 ),
-t AS (
-    SELECT account_id, ip_address, 
-        CASE
-            WHEN (logout >= lead(login) OVER (PARTITION BY account_id)) AND (ip_address != lead(ip_address) OVER (PARTITION BY account_id)) THEN TRUE
-            ELSE FALSE
-        END AS flag
-    FROM LogInfo_new
+t2 AS (
+    SELECT account_id, login <= LAG(logout) OVER w AS flag1, ip_address = LAG(ip_address) OVER w AS flag2
+    FROM t1
+    WINDOW w AS (PARTITION BY account_id ORDER BY login)
 )
 SELECT DISTINCT account_id
-FROM t
-WHERE flag
-ORDER BY account_id;
+FROM t2
+WHERE flag1 AND NOT flag2;
