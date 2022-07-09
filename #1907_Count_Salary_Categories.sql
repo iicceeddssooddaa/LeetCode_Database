@@ -1,32 +1,5 @@
-WITH low AS (
-    SELECT
-        "Low Salary" AS category,
-        COUNT(income) AS accounts_count
-    FROM
-        Accounts
-    WHERE
-        income < 20000
-),
-ave AS (
-    SELECT
-        "Average Salary" AS category,
-        COUNT(income) AS accounts_count
-    FROM
-        Accounts
-    WHERE
-        income BETWEEN 20000 AND 50000
-),
-hi AS (
-    SELECT
-        "High Salary" AS category,
-        COUNT(income) AS accounts_count
-    FROM
-        Accounts
-    WHERE
-        income > 50000
-)
-SELECT * FROM low
+SELECT 'Low Salary' AS category, SUM(IF(income < 20000,1,0)) AS accounts_count FROM Accounts 
 UNION
-SELECT * FROM ave
+SELECT 'Average Salary' AS category, SUM(IF(income BETWEEN 20000 AND 50000,1,0)) AS accounts_count FROM Accounts 
 UNION
-SELECT * FROM hi
+SELECT 'High Salary' AS category, SUM(IF(income > 50000,1,0)) AS accounts_count FROM Accounts
