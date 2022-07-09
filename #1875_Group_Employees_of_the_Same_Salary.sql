@@ -1,5 +1,5 @@
 WITH t AS (
-    SELECT salary, DENSE_RANK() OVER (ORDER BY salary) AS team_id
+    SELECT salary, RANK() OVER (ORDER BY salary) AS team_id
     FROM Employees
     GROUP BY salary
     HAVING COUNT(salary) > 1
