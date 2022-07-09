@@ -15,3 +15,15 @@ t2 AS (
 SELECT visited_on, amount, average_amount FROM t2
 WHERE visited_on >= start_date
 ORDER BY visited_on;
+-------
+WITH t AS (
+    SELECT visited_on, SUM(amount) AS day_sum
+    FROM Customer
+    GROUP BY visited_on
+)
+SELECT t1.visited_on, SUM(t2.day_sum) AS amount, ROUND(AVG(t2.day_sum),2) AS average_amount 
+FROM t AS t1, t AS t2
+WHERE DATEDIFF(t1.visited_on, t2.visited_on) BETWEEN 0 AND 6
+GROUP BY t1.visited_on
+HAVING COUNT(t2.visited_on) =7
+ORDER BY t1.visited_on;
