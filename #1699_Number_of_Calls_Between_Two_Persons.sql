@@ -1,18 +1,8 @@
 WITH t AS (
-    SELECT 
-        CASE
-            WHEN from_id > to_id THEN to_id
-            ELSE from_id
-        END AS person1,
-        CASE
-            WHEN from_id < to_id THEN to_id
-            ELSE from_id
-        END AS person2,
-        duration
-    FROM Calls
+    SELECT from_id AS person1, to_id AS person2, duration FROM Calls WHERE from_id < to_id
+    UNION ALL
+    SELECT to_id AS person1, from_id AS person2, duration FROM Calls WHERE to_id < from_id
 )
-SELECT 
-    DISTINCT person1, person2, COUNT(*) OVER (PARTITION BY person1, person2) AS call_count,
-    SUM(duration) OVER (PARTITION BY person1, person2) AS total_duration
+SELECT person1, person2, COUNT(1) AS call_count, SUM(duration) AS total_duration
 FROM t
-ORDER BY person1, person2;
+GROUP BY person1, person2;
