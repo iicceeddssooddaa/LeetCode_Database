@@ -1,0 +1,12 @@
+WITH t1 AS (
+    SELECT DISTINCT product_id, YEAR(purchase_date) AS `year`, COUNT(order_id) OVER (PARTITION BY product_id, YEAR(purchase_date)) AS yr_cnt
+    FROM Orders
+    ORDER BY product_id, `year`
+),
+t2 AS (
+    SELECT product_id, yr_cnt >= 3 AS flag1, LAG(yr_cnt) OVER (PARTITION BY product_id ORDER BY `year` ) >= 3 AS flag2, LAG(`year`) OVER (PARTITION BY product_id) + 1 = `year` AS flag3
+    FROM t1
+)
+SELECT DISTINCT product_id
+FROM t2 
+WHERE flag1 AND flag2 AND flag3;
