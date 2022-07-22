@@ -1,33 +1,13 @@
-WITH RECURSIVE s1 AS (
-    SELECT employee_id, salary, SUM(salary) OVER (ORDER BY salary, employee_id) AS cum_salary, ROW_NUMBER () OVER (ORDER By salary) AS head_count
+WITH t1 AS (
+    SELECT employee_id, salary, 70000 - SUM(salary) OVER (PARTITION BY experience ORDER BY salary) AS remaining, 70000 - SUM(salary) OVER (PARTITION BY experience ORDER BY salary) >=0 AS s_flag
     FROM Candidates
     WHERE experience = 'Senior'
 ),
-j1 AS (
-    SELECT employee_id, salary, SUM(salary) OVER (ORDER BY salary, employee_id) AS cum_salary, ROW_NUMBER () OVER (ORDER By salary) AS head_count
+t2 AS (
+    SELECT employee_id, salary, IFNULL((SELECT MIN(remaining) AS remaining_budget FROM t1 WHERE s_flag),70000) - SUM(salary) OVER (PARTITION BY experience ORDER BY salary) >=0 AS j_flag
     FROM Candidates
     WHERE experience = 'Junior'
-),
-s2 AS (
-    SELECT cum_salary, head_count, 70000 - cum_salary AS remain
-    FROM s1
-    WHERE cum_salary <= 70000
-),
-j2 AS (
-    SELECT cum_salary, head_count, 
-        (CASE 
-            WHEN (SELECT COUNT(*) FROM s2) = 0 THEN 70000
-            ELSE (SELECT MIN(remain) FROM s2)
-        END)- cum_salary AS remain
-    FROM j1
-    WHERE cum_salary <= (CASE 
-            WHEN (SELECT COUNT(*) FROM s2) = 0 THEN 70000
-            ELSE (SELECT MIN(remain) FROM s2)
-        END)
-),
-t AS (
-    (SELECT 'Senior' AS experience, (SELECT COUNT(*) FROM s2) AS accepted_candidates)
-    UNION
-    (SELECT 'Junior' AS experience, (SELECT COUNT(*) FROM j2) AS accepted_candidates)
 )
-SELECT * FROM t
+SELECT 'Senior' AS experience, COUNT(employee_id) AS accepted_candidates FROM t1 WHERE s_flag
+UNION
+SELECT 'Junior' AS experience, COUNT(employee_id) AS accepted_candidates FROM t2 WHERE j_flag
